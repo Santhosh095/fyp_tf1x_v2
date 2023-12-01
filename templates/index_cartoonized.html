@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-173468417-1"></script>
+    <script
+        src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.3/dist/semantic.min.js"></script>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.3/dist/semantic.min.css">
+
+    <title>Cartoonizer</title>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</head>
+<body>
+    <div id="loader" class="ui disabled dimmer">
+        <div class="ui text loader">Preparing your cartoon! May take an extra few seconds for video :</div>
+    </div>
+    <div class='ui padded centered grid'>
+        <div class="row">
+            <div class="center aligned column">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div style="height:10%; display:flex; align-items: center; justify-content: center">
+                            {% for category, message in messages %}
+                                {% if category == error%}
+                                    <h3 style="color:red">{{ message }}</h3>
+                                {% else %}
+                                    <h3 style="color:green">{{ message }}</h3>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+        <div class="row">
+            <div class='center aligned column'>
+                <h1>Cartoonize your world!</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class='center aligned column'>
+                <form id='formsubmit' method="post" action="cartoonize" enctype = "multipart/form-data">
+                    <div class="ui buttons">
+                        <div id='uploadimage' class="ui button" style="align-items: center;" onclick="uploadImage()">
+                            <i class="image icon"></i>
+                            Image
+                        </div>
+                        <div class="or"></div>
+                        <div id='uploadvideo' class="ui button" style="align-items: center;" onclick="uploadVideo()">
+                            <i class="video icon"></i>
+                            Video
+                            <span style="font-size: 10px;">(Max 30MB)</span>
+                        </div>
+                    </div>
+                    <input type='file' id='hiddeninputfile' accept="image/*" name = 'image' style="display: none" onchange="getImage()"/>
+                    <input type="file" id="hiddeninputvideo" accept="video/*" name = 'video' style="display: none" onchange="getVideo()"/>
+                </form>
+            </div>
+        </div>
+        {%if cartoonized_image or cartoonized_video%}
+        <div class="row">
+            <div class="column">
+                <div class="ui centered grid">
+                    <div class="row">
+                        <div class="center aligned column">
+                            {%if cartoonized_image%}
+                            <div class="ui centered card">
+                                <div class="image">
+                                    <img src="{{ cartoonized_image }}">
+                                </div>
+                            </div>
+                            {%endif%}
+                            {%if cartoonized_video%}
+                                <video id="player" width="320" height="240" controls>
+                                    <source type="video/mp4" src="{{cartoonized_video}}">
+                                </video>
+                            {%endif%}
+                        </div>
+                    </div>
+                    <div class="row">
+                        {%if cartoonized_video%}
+                            <a href={{cartoonized_video}} download>
+                                <button class="ui primary button">
+                                    <i class="download icon"></i>
+                                    Download
+                                </button>
+                            </a>
+                        {%endif%}
+                        {%if cartoonized_image%}
+                            <a href={{cartoonized_image}} download>
+                                <button class="ui primary button">
+                                    <i class="download icon"></i>
+                                    Download
+                                </button><br>
+                                (Valid for 5 minutes only)
+                            </a>
+                        {%endif%}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {%endif%} 
+    </div>
+</body>
+</html>
